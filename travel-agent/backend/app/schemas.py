@@ -9,6 +9,8 @@ class Activity(BaseModel):
     location: Optional[str]
     estimated_duration_minutes: Optional[int]
     cost_estimate: Optional[float]
+    category: Optional[str] = None
+    tip: Optional[str] = None
 
 
 class ItineraryDay(BaseModel):
@@ -26,6 +28,9 @@ class TripRequest(BaseModel):
     currency: str = "USD"
     budget: Optional[float]
     trip_type: Optional[str] = "general"
+    interests: List[str] = Field(default_factory=list)
+    pace: str = "balanced"
+    accommodation: Optional[str] = None
 
 
 class Trip(BaseModel):

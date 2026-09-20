@@ -29,6 +29,9 @@ def main():
         end = st.date_input("End date")
         travelers = st.number_input("Travelers", min_value=1, value=1)
         trip_type = st.selectbox("Trip type", ["General", "Friends", "Honeymoon", "Family", "Solo", "Business"], index=0)
+        interests = st.multiselect("Interests", ["Culture", "Food", "Nature", "Shopping", "Adventure", "Nightlife"])
+        pace = st.select_slider("Travel pace", options=["Relaxed", "Balanced", "Packed"], value="Balanced")
+        accommodation = st.selectbox("Accommodation preference", ["No preference", "Hotel", "Boutique hotel", "Apartment", "Hostel"])
         currency = st.selectbox("Currency", ["USD", "EUR", "GBP"])
         budget = st.number_input("Total budget", min_value=0.0, value=1000.0)
         submitted = st.form_submit_button("Plan My Trip")
@@ -41,6 +44,9 @@ def main():
             "end_date": str(end),
             "travelers": travelers,
             "trip_type": trip_type.lower(),
+            "interests": [interest.lower() for interest in interests],
+            "pace": pace.lower(),
+            "accommodation": None if accommodation == "No preference" else accommodation,
             "currency": currency,
             "budget": budget,
         }
@@ -69,6 +75,14 @@ def main():
                             pass
 
                 st.markdown(f"**Overview:** This {req.get('trip_type', 'general')} trip to {req.get('destination')} includes {len(days)} day(s) of curated activities tailored to your preferences. Estimated activity costs: {req.get('currency','USD')} {total_est:.2f}. These are estimates and may vary.")
+                budget = req.get("budget") or 0
+                remaining = budget - total_est
+                metric_cols = st.columns(3)
+                metric_cols[0].metric("Days", len(days))
+                metric_cols[1].metric("Activity estimate", f"{req.get('currency', 'USD')} {total_est:.2f}")
+                metric_cols[2].metric("Budget remaining", f"{req.get('currency', 'USD')} {remaining:.2f}")
+                if remaining < 0:
+                    st.warning("Planned activity estimates exceed your total budget. Consider a relaxed pace or fewer paid activities.")
 
                 for day in days:
                     with st.expander(f"{day.get('date')} — {day.get('title')}"):
@@ -80,6 +94,23 @@ def main():
                             cols[2].button(f"Remove", key=f"remove-{day.get('date')}-{act.get('title')}")
 
                 st.markdown("---")
+                itinerary_text = [
+                    f"{req.get('destination')} itinerary",
+                    f"{req.get('start_date')} to {req.get('end_date')}",
+                    "",
+                ]
+                for day in days:
+                    itinerary_text.append(f"{day.get('date')} - {day.get('title')}")
+                    itinerary_text.extend(
+                        f"- {act.get('time_of_day')}: {act.get('title')} ({req.get('currency', 'USD')} {act.get('cost_estimate') or 0})"
+                        for act in day.get("activities", [])
+                    )
+                st.download_button(
+                    "Download itinerary",
+                    "\n".join(itinerary_text),
+                    file_name="travel-itinerary.txt",
+                    mime="text/plain",
+                )
 
             render_itinerary(data)
         except requests.exceptions.RequestException as e:

@@ -19,6 +19,9 @@ class TripPlanner:
 
         days = (end.date() - start.date()).days + 1
         itinerary = []
+        interests = {interest.lower() for interest in trip_request.interests}
+        pace = (trip_request.pace or "balanced").lower()
+        activity_limit = {"relaxed": 2, "balanced": 3, "packed": 4}.get(pace, 3)
         for i in range(days):
             day_date = (start + timedelta(days=i)).date()
             # tailor activities by trip type
@@ -37,6 +40,13 @@ class TripPlanner:
                 activities.append(Activity(title="Museum or cultural visit", time_of_day="afternoon", location="Museum district", estimated_duration_minutes=120, cost_estimate=15.0))
                 activities.append(Activity(title="Local dinner", time_of_day="evening", location="Recommended restaurant", estimated_duration_minutes=90, cost_estimate=35.0))
 
-            itinerary.append(ItineraryDay(date=day_date, title=f"Day {i+1}", activities=activities))
+            if "nature" in interests:
+                activities.append(Activity(title="Park or waterfront escape", time_of_day="late afternoon", location="Local green space", estimated_duration_minutes=75, cost_estimate=0.0, category="Nature", tip="Bring water and comfortable shoes."))
+            elif "shopping" in interests:
+                activities.append(Activity(title="Independent shops and local crafts", time_of_day="late afternoon", location="Shopping quarter", estimated_duration_minutes=90, cost_estimate=0.0, category="Shopping", tip="Leave room in your luggage for souvenirs."))
+            elif "food" in interests:
+                activities.append(Activity(title="Regional tasting stop", time_of_day="late afternoon", location="Neighborhood food hall", estimated_duration_minutes=60, cost_estimate=20.0, category="Food", tip="Share dishes to try more local flavors."))
+
+            itinerary.append(ItineraryDay(date=day_date, title=f"Day {i+1} - {pace.title()} pace", activities=activities[:activity_limit]))
 
         return {"itinerary": itinerary, "agent_events": ["planned"]}
