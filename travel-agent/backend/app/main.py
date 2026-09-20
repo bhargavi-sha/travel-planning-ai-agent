@@ -1,5 +1,6 @@
 from datetime import date
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from uuid import uuid4
 from .schemas import TripRequest, Trip
 from .agents.planner import TripPlanner
@@ -9,6 +10,13 @@ planner = TripPlanner()
 
 
 app = FastAPI(title="Travel Agent")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:8501"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 TRIPS = {}

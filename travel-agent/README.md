@@ -2,7 +2,7 @@ Travel Agent — Agentic AI Travel Planner
 
 Overview
 --------
-This project implements an agentic travel planning application with a Python/FastAPI backend and a Streamlit frontend. It supports demo mode when external API keys are missing.
+This project implements an agentic travel planning application with a Python/FastAPI backend and a React frontend. It supports demo mode when external API keys are missing.
 
 Quickstart
 ----------
@@ -29,16 +29,15 @@ Copy-Item ..\.env.example ..\.env -ErrorAction SilentlyContinue
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Frontend (Streamlit):
+Frontend (React):
 
 ```powershell
 cd frontend
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-Copy-Item ..\.env.example ..\.env -ErrorAction SilentlyContinue
-streamlit run app.py --server.port 8501
+npm install
+npm run dev
 ```
+
+Open http://localhost:5173. The frontend calls the API at http://localhost:8000 by default. Set `VITE_API_URL` before running the frontend to use another API address.
 
 Environment variables (PowerShell examples):
 
