@@ -11,12 +11,14 @@ class Activity(BaseModel):
     cost_estimate: Optional[float]
     category: Optional[str] = None
     tip: Optional[str] = None
+    description: Optional[str] = None
 
 
 class ItineraryDay(BaseModel):
     date: date
     title: Optional[str]
     activities: List[Activity]
+    description: Optional[str] = None
 
 
 class TripRequest(BaseModel):

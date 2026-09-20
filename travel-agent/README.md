@@ -44,6 +44,8 @@ Environment variables (PowerShell examples):
 ```powershell
 # Set GROQ key for current session
 $env:GROQ_API_KEY = "<YOUR_KEY>"
+$env:DEMO_MODE = "false"
+$env:LLM_PROVIDER = "groq"
 # Or create a local .env file and ensure .env is in .gitignore
 ```
 
