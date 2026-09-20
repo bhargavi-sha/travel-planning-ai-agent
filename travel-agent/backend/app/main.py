@@ -23,9 +23,13 @@ async def create_trip(req: TripRequest):
     trip_id = str(uuid4())
     trip = Trip(id=trip_id, request=req, status="created")
     TRIPS[trip_id] = trip
-    # Start planning in background - simplified synchronous call for scaffold
-    itinerary = await planner.plan(req)
+    # Run planner synchronously for demo scaffold
+    result = await planner.plan(req)
+    itinerary = result.get("itinerary")
+    # attach itinerary to trip
+    trip.itinerary = itinerary
     trip.status = "planned"
+    TRIPS[trip_id] = trip
     return trip
 
 

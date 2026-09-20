@@ -1,5 +1,20 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from datetime import date
+
+
+class Activity(BaseModel):
+    title: str
+    time_of_day: str
+    location: Optional[str]
+    estimated_duration_minutes: Optional[int]
+    cost_estimate: Optional[float]
+
+
+class ItineraryDay(BaseModel):
+    date: date
+    title: Optional[str]
+    activities: List[Activity]
 
 
 class TripRequest(BaseModel):
@@ -10,9 +25,11 @@ class TripRequest(BaseModel):
     travelers: int = Field(..., gt=0)
     currency: str = "USD"
     budget: Optional[float]
+    trip_type: Optional[str] = "general"
 
 
 class Trip(BaseModel):
     id: str
     request: TripRequest
     status: str
+    itinerary: Optional[List[ItineraryDay]] = None
